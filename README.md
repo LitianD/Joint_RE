@@ -1,7 +1,6 @@
 # Joint_RE
 A pytorch version of  ACL 2020 paper 
 "A Novel Cascade Binary Tagging Framework for Relational Triple Extraction"
-URL: https://arxiv.org/abs/1909.03227
 
 ![](/img/model.png)
 
@@ -17,3 +16,13 @@ pytorch bert模型：https://pan.baidu.com/s/1u4IC6ldMLf43oEQxF-SdLA      提取
 ## other
 
 config.py 中device调试时候用cpu
+
+## 可参考
+
+原论文链接: https://arxiv.org/abs/1909.03227
+
+tensorflow版本: https://github.com/weizhepei/CasRel
+
+pytorch原版本:https://github.com/WeKnowG/Extractor
+
+bert-chinese中文bert:https://github.com/ymcui/Chinese-BERT-wwm
