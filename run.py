@@ -20,9 +20,9 @@ class Trainer:
 
     def __init__(self, dataset):
         
-        train_path = config.dataset_path + dataset + "/sample.json"
-        dev_path = config.dataset_path + dataset + "/sample.json"
-        test_path = config.dataset_path + dataset + "/sample.json"
+        train_path = config.dataset_path + dataset + "/train_data.json"
+        dev_path = config.dataset_path + dataset + "/dev_data.json"
+        test_path = config.dataset_path + dataset + "/dev_data.json"
         rel_dict_path = config.dataset_path + dataset + "/rel2id.json"
 
         # data process
@@ -32,14 +32,14 @@ class Trainer:
                                                                                                             rel_dict_path)
     def setup(self, model):
         
-        bert_config_path = config.pretrained_model_path + config.MODEL_PATH_MAP[model] + "/config.json"
-        bert_model_path = config.pretrained_model_path + config.MODEL_PATH_MAP[model] + "/model.bin"
+        bert_config_path = config.pretrained_model_path + config.MODEL_PATH_MAP[model] + "/bert_config.json"
+        bert_model_path = config.pretrained_model_path + config.MODEL_PATH_MAP[model] + "/chinese_wwm_pytorch.bin"
         bert_vocab_path = config.pretrained_model_path + config.MODEL_PATH_MAP[model] + "/vocab.txt"
 
         lm_config = config.MODEL_CLASSES[model][0].from_pretrained(bert_config_path)
         self.lm_model = nn.DataParallel(config.MODEL_CLASSES[model][1].from_pretrained(bert_model_path, config=lm_config)).to(config.device)
-        self.lm_tokenizer = config.MODEL_CLASSES[model][2](bert_vocab_path, do_lower_case=False)
-         
+        # self.lm_tokenizer = config.MODEL_CLASSES[model][2](bert_vocab_path, do_lower_case=False)
+        self.lm_tokenizer = config.MODEL_CLASSES[model][2](bert_vocab_path)
         self.train_data = CustomDataset(self.train_data, 
                                         self.lm_tokenizer, 
                                         self.rel2id, 
@@ -111,9 +111,9 @@ class Trainer:
             
             for batch in self.train_batcher:
                 total_loss, sub_entities_loss, obj_entities_loss = self.train_one_batch(batch)
-                print("epoch:", epoch, "step: ", step, "total_loss:", total_loss, "sub_entities_loss:", sub_entities_loss, "obj_entities_loss: ", obj_entities_loss)
+                print("epoch:", epoch, " step: ", step, "total_loss:", total_loss, "sub_entities_loss:", sub_entities_loss, "obj_entities_loss: ", obj_entities_loss)
                 step += 1
-                if step % 2000 == 0:
+                if step % 10 == 0:
                     
                     with torch.no_grad():
                         
@@ -123,8 +123,11 @@ class Trainer:
 
                         precision, recall, f1 = metric(self.lm_model, self.subject_model, self.object_model, self.test_data, self.id2rel, self.lm_tokenizer, output_path="./result.json")
                         print("precision: ", precision, "recall: ", recall, "f1: ", f1)
-                        self.save_models(args, total_loss, step)
-                        
+                        # self.save_models(args, total_loss, step)
+                        f = open("result2.txt", 'a+')
+                        f.write("epoch: " + str(epoch) + " step: " + str(step) + " precision: " + str(precision)
+                                + " recall: " + str(recall) + " f1: " + str(f1)+'\n')
+                        f.close()
                     self.lm_model.train()
                     self.subject_model.train()
                     self.object_model.train()
