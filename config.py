@@ -1,12 +1,12 @@
 from transformers import BertConfig, DistilBertConfig, AlbertConfig
 from utils.tokenizer import BERTTokenizer
-from transformers import BertTokenizer
+from transformers import BertTokenizer, BertModel
 from models import BERT
 from transformers.modeling_bert import BertConfig
 import torch
 
-epoches = 25
-batch_size = 16
+epoches = 15
+batch_size = 10
 lr = 1e-5
 
 BERT_MAX_LEN = 200
@@ -23,9 +23,9 @@ save_weights_path = "./saved_weights/"
 model_file_path = "./saved_weights/spanbert_model_24000_1591679879"
 
 MODEL_CLASSES = {
-    'bert': (BertConfig, BERT, BERTTokenizer),
-    'spanbert': (BertConfig, BERT, BERTTokenizer),
-    'chinese-bert': (BertConfig, BERT, BertTokenizer)
+    'bert': (BertConfig, BertModel, BERTTokenizer),
+    'spanbert': (BertConfig, BertModel, BERTTokenizer),
+    'chinese-bert': (BertConfig, BertModel, BertTokenizer)
 }
 
 MODEL_PATH_MAP = {

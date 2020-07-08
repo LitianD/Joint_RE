@@ -26,8 +26,6 @@ class BERTTokenizer(BertTokenizer):
 #         else:
 #             split_tokens = self.wordpiece_tokenizer.tokenize(text)
 #             split_tokens.append("[unused1]")
-        
-        
 
         spaced = ''
         for ch in text:

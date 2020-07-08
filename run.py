@@ -20,9 +20,9 @@ class Trainer:
 
     def __init__(self, dataset):
         
-        train_path = config.dataset_path + dataset + "/train_data.json"
-        dev_path = config.dataset_path + dataset + "/dev_data.json"
-        test_path = config.dataset_path + dataset + "/dev_data.json"
+        train_path = config.dataset_path + dataset + "/train_data_50000.json"
+        dev_path = config.dataset_path + dataset + "/dev_data_5000.json"
+        test_path = config.dataset_path + dataset + "/dev_data_5000.json"
         rel_dict_path = config.dataset_path + dataset + "/rel2id.json"
 
         # data process
@@ -113,7 +113,7 @@ class Trainer:
                 total_loss, sub_entities_loss, obj_entities_loss = self.train_one_batch(batch)
                 print("epoch:", epoch, " step: ", step, "total_loss:", total_loss, "sub_entities_loss:", sub_entities_loss, "obj_entities_loss: ", obj_entities_loss)
                 step += 1
-                if step % 10 == 0:
+                if step % 500 == 0:
                     
                     with torch.no_grad():
                         
@@ -124,7 +124,7 @@ class Trainer:
                         precision, recall, f1 = metric(self.lm_model, self.subject_model, self.object_model, self.test_data, self.id2rel, self.lm_tokenizer, output_path="./result.json")
                         print("precision: ", precision, "recall: ", recall, "f1: ", f1)
                         # self.save_models(args, total_loss, step)
-                        f = open("result2.txt", 'a+')
+                        f = open("result3.txt", 'a+')
                         f.write("epoch: " + str(epoch) + " step: " + str(step) + " precision: " + str(precision)
                                 + " recall: " + str(recall) + " f1: " + str(f1)+'\n')
                         f.close()
@@ -160,8 +160,8 @@ class Trainer:
                        "attention_mask": attention_mask_batch, 
                        "token_type_ids": segments_batch}
         
-        bert_outputs = self.lm_model(**bert_inputs)
-        
+        bert_outputs = self.lm_model(**bert_inputs)[0]
+
         sub_heads, sub_tails = self.subject_model(bert_outputs)
         
         pred_obj_heads, pred_obj_tails = self.object_model(bert_outputs, 

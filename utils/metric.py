@@ -81,7 +81,7 @@ def extract_items(lm_model, subject_model, object_model, tokenizer, text_in, id2
     attention_mask = torch.tensor([attention_mask]).long().to(config.device)
     segment_ids = torch.tensor([segment_ids]).long().to(config.device)
     
-    bert_outputs = lm_model(token_ids, attention_mask, segment_ids)
+    bert_outputs = lm_model(token_ids, attention_mask, segment_ids)[0]
     sub_heads_logits, sub_tails_logits = subject_model(bert_outputs)
     
     sub_heads, sub_tails = np.where(sub_heads_logits.cpu().numpy()[0] > h_bar)[0], np.where(sub_tails_logits.cpu().numpy()[0] > t_bar)[0]
@@ -105,7 +105,7 @@ def extract_items(lm_model, subject_model, object_model, tokenizer, text_in, id2
         attention_mask = torch.tensor(attention_mask).long().to(config.device)
         segment_ids = torch.tensor(segment_ids).long().to(config.device)
         
-        bert_outputs = lm_model(token_ids, attention_mask, segment_ids)
+        bert_outputs = lm_model(token_ids, attention_mask, segment_ids)[0]
         sub_heads_logits, sub_tails_logits = subject_model(bert_outputs)
         
         sub_heads, sub_tails = np.array([sub[1:] for sub in subjects]).T.reshape((2, -1, 1))
